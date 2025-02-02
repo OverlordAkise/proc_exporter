@@ -127,7 +127,7 @@ func GetStats() map[string]float64 {
 		if _, exist := ret[name]; !exist {
 			ret[name] = 0
 		}
-		if val, exist := oldValues[name]; exist && val < cpu {
+		if val, exist := oldValues[name]; exist && val <= cpu {
 			ret[name] += (cpu - val)
 		} else {
 			ret[name] += cpu

@@ -100,10 +100,11 @@ func ParseStatForNameAndCPU(in string) (string, float64) {
 	return strings.Trim(name, "()"), utime + stime
 }
 
-var oldStats = map[string]float64{}
+var oldValues = map[string]float64{}
 
 func GetStats() map[string]float64 {
 	ret := map[string]float64{}
+	newOldValues := map[string]float64{}
 	folders, err := os.ReadDir("/proc")
 	if err != nil {
 		panic(err)
@@ -122,16 +123,16 @@ func GetStats() map[string]float64 {
 			continue
 		}
 		name, cpu := ParseStatForNameAndCPU(string(bytes))
+		newOldValues[name] = cpu
 		if _, exist := ret[name]; !exist {
 			ret[name] = 0
 		}
-		if val, exist := oldStats[name]; exist && val < cpu {
+		if val, exist := oldValues[name]; exist && val < cpu {
 			ret[name] += (cpu - val)
 		} else {
 			ret[name] += cpu
 		}
 	}
-	oldStats = maps.Clone(ret)
+	oldValues = maps.Clone(newOldValues)
 	return ret
 }
-
